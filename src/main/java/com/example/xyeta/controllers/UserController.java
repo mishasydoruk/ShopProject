@@ -2,7 +2,7 @@ package com.example.xyeta.controllers;
 
 import com.example.xyeta.DTO.Responses.DisplayUserDTO;
 import com.example.xyeta.Exeptions.ErrorResponse;
-import com.example.xyeta.Exeptions.NotFoundResponse;
+import com.example.xyeta.Exeptions.NotFoundExeption;
 import com.example.xyeta.services.AuthService;
 import com.example.xyeta.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class UserController {
 
         if (userToSend == null)
         {
-            ErrorResponse errorResponse = new NotFoundResponse( "User with uuid" + uuid.toString());
+            ErrorResponse errorResponse = new NotFoundExeption( "User with uuid" + uuid.toString());
             return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(userToSend, HttpStatus.OK);

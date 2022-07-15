@@ -2,20 +2,21 @@ package com.example.xyeta.services;
 
 import com.example.xyeta.DTO.Responses.DisplayUserDTO;
 import com.example.xyeta.DTO.Requests.UserDTO;
+import com.example.xyeta.Exeptions.AlreadyExistsExeption;
 import com.example.xyeta.models.User;
 import com.example.xyeta.repository.RoleRepository;
 import com.example.xyeta.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-@Component
 @Service
 public class UserService {
 
@@ -31,25 +32,23 @@ public class UserService {
     private static final ModelMapper modelMapper = new ModelMapper();
 
     public List<User> getAllUsers(){
-        List<User> users = new ArrayList<>();
-        userRepository.findAll().forEach(users::add);
-        return users;
+        return new ArrayList<>(userRepository.findAll());
     }
 
-    public boolean createUser(UserDTO userDTO)
-    {
+    @Async("asyncExecutor")
+    public CompletableFuture<User> createUser(UserDTO userDTO) throws AlreadyExistsExeption {
         User userToSave = modelMapper.map(userDTO, User.class);
 
         if (userRepository.findUserByEmail(userToSave.getEmail()) != null) {
 
-            return false;
+            throw new AlreadyExistsExeption(userToSave.toString());
         }
         else {
             userToSave.setRegistrationDate(LocalDateTime.now());
             userToSave.setRole(roleRepository.findRoleByName("ROLE_USER"));
             userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
             userRepository.save(userToSave);
-            return true;
+            return CompletableFuture.completedFuture(userToSave);
         }
 
     }

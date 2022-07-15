@@ -9,8 +9,11 @@ import javax.persistence.*;
 @Table(name = "purchases")
 @Getter
 @Setter
-public class Purchase extends BaseEntity {
+public class CompletedOrder extends BaseEntity {
 
     @ManyToOne
     private User user;
+
+    @OneToOne
+    private SaledGoods goods;
 }

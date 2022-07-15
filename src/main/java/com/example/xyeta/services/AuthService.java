@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Component
 @Service
 public class AuthService {
@@ -31,7 +33,7 @@ public class AuthService {
             currentUsername = authentication.getName();
         }
 
-        return user.getUsername().equals(currentUsername) || user.getRole().getName() == "ROLE_ADMIN";
+        return user.getUsername().equals(currentUsername) || Objects.equals(user.getRole().getName(), "ROLE_ADMIN");
     }
 
 }

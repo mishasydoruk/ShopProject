@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public abstract class ErrorResponse {
+public abstract class ErrorResponse extends Throwable {
     public int status;
     public String message;
     public LocalDateTime timestamp;

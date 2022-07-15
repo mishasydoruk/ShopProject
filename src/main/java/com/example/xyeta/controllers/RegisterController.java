@@ -1,24 +1,24 @@
 package com.example.xyeta.controllers;
 
 import com.example.xyeta.DTO.Requests.AuthRequestDTO;
-import com.example.xyeta.DTO.Responses.DisplayUserDTO;
 import com.example.xyeta.DTO.Requests.UserDTO;
-import com.example.xyeta.Exeptions.ErrorResponse;
-import com.example.xyeta.Exeptions.NotFoundResponse;
 import com.example.xyeta.config.Jwt.JwtProvider;
 import com.example.xyeta.models.User;
 import com.example.xyeta.services.AuthService;
 import com.example.xyeta.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 @RestController
 public class RegisterController {
+
+    private static Logger log = LoggerFactory.getLogger(RegisterController.class);
 
     @Autowired
     private UserService userService;
@@ -30,12 +30,15 @@ public class RegisterController {
     AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDTO user){
+    public ResponseEntity<User> register(@Valid @RequestBody UserDTO user)  {
 
-        if(userService.createUser(user)) {
-            return ResponseEntity.ok("ok");
+        try {
+            return new ResponseEntity<>(userService.createUser(user).join(), HttpStatus.OK);
         }
-        else return new ResponseEntity<>(HttpStatus.IM_USED);
+        catch (Throwable e){
+            log.info(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.IM_USED);
+        }
     }
 
 
